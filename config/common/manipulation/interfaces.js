@@ -47,6 +47,74 @@ module.exports = {
             }
         }
     },
+    referencesResolver: {
+        methods: {
+            /**
+             * Compile references in a source.
+             *
+             * @param {string} delimiter The reference delimiter.
+             * @param {mixed} source The source.
+             * @param {string|null} from An optionnal text specifying where the reference is coming from.
+             * @return {mixed} The source with compiled references.
+             */
+            compile: {
+                arguments: [
+                    'string/delimiter',
+                    'mixed/source',
+                    'string|null/from'
+                ],
+                returns: 'mixed'
+            },
+            /**
+             * Resolve the references occurring in a source.
+             *
+             * Examples:
+             *     delimiter = '%'
+             *     source = %.foo.bar%
+             *     context = {foo: {bar: 'ok'}}
+             *     => returns 'ok'
+             *
+             *     delimiter = '%'
+             *     source = I love %.who%
+             *     context = { who: 'you' }
+             *     => returns 'I love you'
+             *
+             *     delimiter = '%'
+             *     source = I love %.who%
+             *     context = {who: ['you', 'me']}
+             *     => returns ['I love you', 'I love me']
+             *
+             * @param {string} delimiter The reference delimiter.
+             * @param {mixed} source The source.
+             * @param {mixed} context The context in which to resolve the references.
+             * @return {mixed} The source with resolved references.
+             */
+            resolve: {
+                arguments: [
+                    'string/delimiter',
+                    'mixed/source',
+                    'mixed/context'
+                ],
+                returns: 'mixed'
+            }
+        }
+    },
+    referenceProcessor: {
+        methods: {
+            /**
+             * Process a reference.
+             *
+             * @param {string} delimiter ...
+             * @return {mixed} ...
+             */
+            process: {
+                arguments: [
+                    'string/delimiter'
+                ],
+                returns: 'mixed'
+            }
+        }
+    },
     referenceResolver: {
         methods: {
             /**
