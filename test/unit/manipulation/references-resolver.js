@@ -12,7 +12,8 @@ var assert = require('assert'),
 var referencesResolver = new ReferencesResolver(),
     uniqueIdGenerator = new UniqueIdGenerator(),
     joinProcessor = new JoinProcessor(),
-    splitProcessor = new SplitProcessor()
+    splitProcessor = new SplitProcessor(),
+    compilations = []
 ;
 
 referencesResolver.uniqueIdGenerator = uniqueIdGenerator;
@@ -27,13 +28,94 @@ var compilationTests = [
         },
         {
             delimiter: '%',
-            source: '%>foo%',
-            expected: /^-%`[^`]+`%-$/
+            source: '%>%',
+            expected: /^-%`[-\da-f]+`%-$/
         },
         {
             delimiter: '%',
-            source: 'I am %>foo%!!',
-            expected: /^I am -%`[^`]+`%-!!$/
+            source: '%<%',
+            expected: /^-%`[-\da-f]+`%-$/
+        },
+        {
+            delimiter: '%',
+            source: 'I am %>%!!',
+            expected: /^I am -%`[-\da-f]+`%-!!$/
+        },
+        {
+            delimiter: '%',
+            source: 'I am %<%!!',
+            expected: /^I am -%`[-\da-f]+`%-!!$/
+        },
+        {
+            delimiter: '%',
+            source: 'I am %>% and %>% !!',
+            expected: /^I am -%`[-\da-f]+`%- and -%`[-\da-f]+`%- !!$/
+        },
+        {
+            delimiter: '%',
+            source: 'I am %<% and %<% !!',
+            expected: /^I am -%`[-\da-f]+`%- and -%`[-\da-f]+`%- !!$/
+        },
+        {
+            delimiter: '%',
+            source: '%> %',
+            expected: /^-%`[-\da-f]+`%-$/
+        },
+        {
+            delimiter: '%',
+            source: '%>-|< %',
+            expected: /^-%`[-\da-f]+`%-$/
+        }
+    ]
+;
+
+var resolvingTests = [
+        {
+            delimiter: '%',
+            compilation: 0,
+            context: ['foo', 'bar'],
+            expected: 'foo'
+        },
+        {
+            delimiter: '%',
+            compilation: 1,
+            context: ['foo', 'bar'],
+            expected: 'foo.bar'
+        },
+        {
+            delimiter: '%',
+            compilation: 2,
+            context: 'foo.bar',
+            expected: ['foo', 'bar']
+        },
+        {
+            delimiter: '%',
+            compilation: 3,
+            context: ['foo', 'bar'],
+            expected: 'I am foo.bar!!'
+        },
+        {
+            delimiter: '%',
+            compilation: 4,
+            context: 'foo.bar',
+            expected: ['I am foo!!', 'I am bar!!']
+        },
+        {
+            delimiter: '%',
+            compilation: 5,
+            context: ['foo', 'bar'],
+            expected: 'I am foo.bar and foo.bar !!'
+        },
+        {
+            delimiter: '%',
+            compilation: 6,
+            context: 'foo.bar',
+            expected: [
+                'I am foo and foo !!',
+                'I am bar and foo !!',
+                'I am foo and bar !!',
+                'I am bar and bar !!'
+            ]
         }
     ]
 ;
@@ -51,15 +133,47 @@ describe('ReferencesResolver', function() {
             if (test.expected instanceof RegExp) {
                 assert.ok(
                     test.expected.test(result),
-                    'source "{0}" compiled in "{1}" should follow pattern "{2}".'.format(
+                    'source "{0}" compilation "{1}" should follow pattern "{2}".'.format(
                         test.source,
                         result,
                         test.expected
                     )
                 );
             } else {
-                assert.deepEqual(result, test.expected);
+                assert.deepEqual(
+                  result,
+                  test.expected,
+                  'source "{0}" compilation "{1}" should be equal to "{2}".'.format(
+                      test.source,
+                      result,
+                      test.expected
+                  )
+                );
             }
+
+            compilations.push(result);
+        });
+    });
+
+    resolvingTests.forEach(function(test) {
+        it('method "compile" should compile references in a source', function() {
+            var compilation = compilations[test.compilation],
+                result = referencesResolver.resolve(
+                    test.delimiter,
+                    compilations[test.compilation],
+                    test.context
+                )
+            ;
+
+            assert.deepEqual(
+                result,
+                test.expected,
+                'source "{0}" should resolve to "{1}", "{2}" resolved instead.'.format(
+                    compilation,
+                    test.expected,
+                    result || 'undefined'
+                )
+            );
         });
     });
 });
