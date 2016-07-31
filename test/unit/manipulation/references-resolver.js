@@ -156,7 +156,7 @@ describe('ReferencesResolver', function() {
     });
 
     resolvingTests.forEach(function(test) {
-        it('method "compile" should compile references in a source', function() {
+        it('method "resolve" should resolve the compiled references in a source from a context', function() {
             var compilation = compilations[test.compilation],
                 result = referencesResolver.resolve(
                     test.delimiter,
