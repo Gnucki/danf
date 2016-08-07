@@ -13,10 +13,16 @@ var referencesResolver = new ReferencesResolver(),
     uniqueIdGenerator = new UniqueIdGenerator(),
     joinProcessor = new JoinProcessor(),
     splitProcessor = new SplitProcessor(),
+    resolvingStreamProvider = {
+        provide: function(parameters) {
+            return {context: parameters.source};
+        }
+    },
     compilations = []
 ;
 
 referencesResolver.uniqueIdGenerator = uniqueIdGenerator;
+referencesResolver.resolvingStreamProvider = resolvingStreamProvider;
 referencesResolver.addProcessor(joinProcessor);
 referencesResolver.addProcessor(splitProcessor);
 

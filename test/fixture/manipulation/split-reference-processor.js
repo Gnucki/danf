@@ -12,10 +12,10 @@ Object.defineProperty(JoinReferenceProcessor.prototype, 'prefix', {
     value: '<'
 });
 
-JoinReferenceProcessor.prototype.parseArguments = function(serializedArgs) {
-    return serializedArgs || '.';
+JoinReferenceProcessor.prototype.parseParameters = function(serializedParameters) {
+    return serializedParameters || '.';
 }
 
-JoinReferenceProcessor.prototype.process = function(context, args, meta) {
-    return context.split('.');
+JoinReferenceProcessor.prototype.process = function(stream, parameters) {
+    stream.context = stream.context.split('.');
 }

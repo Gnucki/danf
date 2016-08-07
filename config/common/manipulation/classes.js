@@ -6,7 +6,7 @@ module.exports = {
     referencesResolver: require('../../../lib/common/manipulation/reference-resolver'),
     referenceProcessor: {
         abstract: require('../../../lib/common/manipulation/reference-processor/abstract'),
-        select: require('../../../lib/common/manipulation/reference-processor/select')
+        //selection: require('../../../lib/common/manipulation/reference-processor/selection')
     },
     referenceResolver: require('../../../lib/common/manipulation/reference-resolver'),
     referenceType: require('../../../lib/common/manipulation/reference-type'),

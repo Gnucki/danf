@@ -7,7 +7,7 @@ module.exports = {
     uniqueIdGenerator: {
         class: 'danf:manipulation.uniqueIdGenerator'
     },
-    referencesResolver: {
+    /*referencesResolver: {
         class: 'danf:manipulation.referencesResolver',
         properties: {
             uniqueIdGenerator: '#danf:manipulation.uniqueIdGenerator#'
@@ -16,11 +16,11 @@ module.exports = {
     referenceProcessor: {
         collections: ['danf:manipulation.referenceProcessor'],
         children: {
-            select: {
-                class: 'danf:manipulation.referenceProcessor.select'
+            selection: {
+                class: 'danf:manipulation.referenceProcessor.selection'
             }
         }
-    },
+    },*/
     referenceResolver: {
         class: 'danf:manipulation.referenceResolver',
         properties: {
