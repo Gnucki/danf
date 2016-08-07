@@ -8,12 +8,6 @@ var assert = require('assert'),
 
 var serializer = new Serializer();
 
-serializer.pathResolver = {
-    resolve: function(value, context) {
-        return '{0}{1}'.format(value, context);
-    }
-}
-
 var serializationTests = [
         {
             value: 'a',
@@ -53,10 +47,6 @@ var unserializationTests = [
         {
             value: '"foo"',
             expected: 'foo'
-        },
-        {
-            value: '"foo.bar"',
-            expected: 'foo.bar'
         },
         {
             value: '"1"',
@@ -103,27 +93,31 @@ var unserializationTests = [
             expected: -4.5
         },
         {
-            value: '>foo',
-            contexts: {'>': '<', '-': 'bar'},
-            expected: 'foo<'
-        },
-        {
-            value: '-foo',
-            contexts: {'>': '<', '-': 'bar'},
-            expected: 'foobar'
-        },
-        {
-            value: '-foo',
-            expected: '-foo'
-        },
-        {
-            value: '"-foo"',
-            contexts: {'>': '<', '-': 'bar'},
-            expected: '-foo'
+            value: '"-4.50"',
+            expected: '-4.50'
         },
         {
             value: 'foo',
             expected: 'foo'
+        },
+        {
+            value: 'foo',
+            unserializeOthers: function(value) {
+              return '>{0}<'.format(value);
+            },
+            expected: '>foo<'
+        },
+        {
+            value: '',
+            expected: null
+        },
+        {
+            value: 'null',
+            expected: null
+        },
+        {
+            value: 'undefined',
+            expected: null
         }
     ]
 ;
@@ -133,7 +127,7 @@ describe('PathResolver', function() {
         it('method "serialize" should serialize `{0}` in `{1}`'.format(JSON.stringify(test.value), test.expected), function() {
             var result = serializer.serialize(test.value, test.space);
 
-            assert.deepStrictEqual(
+            assert.deepEqual(
                 result,
                 test.expected
             );
@@ -142,9 +136,9 @@ describe('PathResolver', function() {
 
     unserializationTests.forEach(function(test) {
         it('method "unserialize" should unserialize `{0}` in `{1}`'.format(test.value, JSON.stringify(test.expected)), function() {
-            var result = serializer.unserialize(test.value, test.contexts);
+            var result = serializer.unserialize(test.value, test.unserializeOthers);
 
-            assert.deepStrictEqual(
+            assert.deepEqual(
                 result,
                 test.expected
             );
