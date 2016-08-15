@@ -62,6 +62,15 @@ var evaluationTests = [
 
 describe('MathEvaluator', function() {
     evaluationTests.forEach(function(test) {
+        it('method "compile" should evaluate the expression `{0}` in a function evaluating to `{1}`'.format(test.value, test.expected), function() {
+            var evaluation = mathEvaluator.compile(test.value);
+
+            assert.equal(
+                evaluation(),
+                test.expected
+            );
+        });
+
         it('method "evaluate" should evaluate the expression `{0}` in `{1}`'.format(test.value, test.expected), function() {
             var result = mathEvaluator.evaluate(test.value);
 
