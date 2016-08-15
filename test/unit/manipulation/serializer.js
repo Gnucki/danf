@@ -122,7 +122,7 @@ var unserializationTests = [
     ]
 ;
 
-describe('PathResolver', function() {
+describe('Serializer', function() {
     serializationTests.forEach(function(test) {
         it('method "serialize" should serialize `{0}` in `{1}`'.format(JSON.stringify(test.value), test.expected), function() {
             var result = serializer.serialize(test.value, test.space);
