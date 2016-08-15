@@ -7,11 +7,19 @@ var assert = require('assert'),
 ;
 
 var hierarchyEvaluator = new HierarchyEvaluator(),
-    evaluate = function(operation) {
+    evaluate = function(operation, offset, sep) {
         var value = operation.match(/[a-z]/)[0];
 
         return function(values, separator) {
-            var evaluation = operation.replace(value, '-{0}{1}-'.format(value, values.length));
+            var evaluation = operation.replace(
+                    value,
+                    '{2}{0}{1}{2}'.format(
+                        value,
+                        values.length + (offset || 0),
+                        sep || separator
+                    )
+                )
+            ;
 
             return evaluation.format.apply(evaluation, values);
         };
@@ -42,18 +50,34 @@ var evaluationTests = [
         {
             value: 'z',
             expected: '-z0-'
+        },
+        {
+            value: 'z',
+            offset: 1,
+            expected: '-z1-'
         }
     ]
 ;
 
 describe('HierarchyEvaluator', function() {
     evaluationTests.forEach(function(test) {
-        it('method "evaluate" should evaluate the expression `{0}` in `{1}`'.format(JSON.stringify(test.value), JSON.stringify(test.expected)), function() {
-            var evaluation = hierarchyEvaluator.evaluate(test.value, evaluate);
+        it('method "compile" should compile the expression `{0}` in a function evaluating to `{1}`'.format(JSON.stringify(test.value), JSON.stringify(test.expected)), function() {
+            var evaluation = hierarchyEvaluator.compile(test.value, evaluate, test.offset);
 
             assert.equal(
                 evaluation('-'),
                 test.expected
+            );
+        });
+
+        var expected = test.expected.replace(/-/g, '.');
+
+        it('method "evaluate" should evaluate the expression `{0}` in `{1}`'.format(JSON.stringify(test.value), JSON.stringify(expected)), function() {
+            var result = hierarchyEvaluator.evaluate(test.value, evaluate, test.offset, '.');
+
+            assert.equal(
+                result,
+                expected
             );
         });
     });
